@@ -4,93 +4,155 @@ body, html {
     padding: 0;
     width: 100%;
     height: 100%;
-    overflow: hidden; /* Hide overflow to prevent scrollbars */
     font-family: 'Arial', sans-serif;
+}
+
+/* Navbar styling enhancements */
+.navbar {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    background-color: #ffffff;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease;
+}
+
+.navbar:hover {
+    background-color: #f8f9fa;
+}
+
+.navbar-brand {
+    font-size: 1.75rem;
+    font-weight: bold;
+    color: #dc3545;
+}
+
+.navbar-brand:hover {
+    color: #bd2130;
+}
+
+.nav-link {
+    color: #333;
+    font-weight: 500;
+    transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.nav-link:hover {
+    color: #dc3545;
+    transform: translateY(-2px);
 }
 
 /* Full height layout for the main content */
 .main-content {
     display: flex;
-    height: 100vh; /* Full viewport height */
+    height: calc(100vh - 56px);
 }
 
 /* Left container (content) */
 .left-container {
-    width: 50%; /* Left half of the screen */
+    width: 50%;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    align-items: flex-start; /* Align text to the left */
-    padding-left: 2rem; /* Add some padding for spacing */
-    z-index: 1;
+    align-items: flex-start;
+    padding-left: 2rem;
     background-color: white;
 }
 
-/* Right container (for image) */
+.left-container h1 {
+    font-size: 3rem;
+    color: #dc3545;
+    animation: fadeInDown 1s ease-out;
+}
+
+.left-container h2 {
+    font-size: 2.5rem;
+    color: #333;
+    margin-bottom: 1rem;
+    animation: fadeInDown 1.2s ease-out;
+}
+
+.left-container p {
+    font-size: 1.25rem;
+    color: #555;
+    line-height: 1.6;
+    max-width: 500px;
+    margin-bottom: 1.5rem;
+    animation: fadeIn 1.4s ease-out;
+}
+
+/* Get Started Button styles */
+.btn-danger {
+    padding: 0.75rem 2rem;
+    font-size: 1.25rem;
+    font-weight: bold;
+    background-color: #dc3545; /* Red background */
+    color: #ffffff; /* White text */
+    border: none;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    animation: bounce 1.5s ease-in-out infinite; /* Continuous bounce effect */
+}
+
+.btn-danger:hover {
+    transform: scale(1.05);
+    box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Bounce Animation */
+@keyframes bounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px); /* Adjusts the bounce height */
+    }
+}
+
+/* Right container (for background image) */
 .right-container {
-    width: 50%; /* Right half of the screen */
+    width: 50%;
     position: relative;
-    background-color: white; /* Ensure white background */
-    display: flex;
-    justify-content: flex-end; /* Align content to the right */
-    padding: 0;
-    margin: 0;
+    background-color: white;
+    background-image: url('/assests/enerzal.jpg');
+    background-size: cover;
+    background-repeat: repeat-y;
+    background-position: 0 0;
+    animation: scrollBackground 15s linear infinite;
+    opacity: 0.2;
 }
 
-/* Slanted image with modified animation */
-.slanted-image {
-    width: 100%;
-    height: auto;
-    transform: rotate(90 deg);
-    position: absolute;
-    right: -50px;
-    z-index: 1;
-    opacity: 0.2; /* Adjusted opacity for more transparency */
-    animation: slantMove 60s linear infinite; /* Keep the animation running */
-}
-
-/* Animation for slanted image - stopping at center */
-@keyframes slantMove {
+/* Keyframes for infinite scrolling effect */
+@keyframes scrollBackground {
     0% {
-        top: -5%; /* Start off-screen */
-    }
-    10% {
-        top: 10%; /* Move to the center */
-    }
-    10% {
-        top: 10%; /* Hold the position at the center */
+        background-position: 0 0;
     }
     100% {
-        top: -2%; /* End position */
+        background-position: 0 100%;
     }
 }
 
-body {
-    font-family: 'Arial', sans-serif;
+/* Keyframes for animations */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 
-.navbar {
-    margin-bottom: 20px;
-}
-
-.navbar-brand {
-    font-size: 1.5rem;
-    font-weight: bold;
-}
-
-.nav-link {
-    transition: color 0.3s ease;
-}
-
-.nav-link:hover {
-    color: #dc3545; /* Red color for hover */
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 /* Footer styling */
 footer {
-    position: relative;
     width: 100%;
     background-color: white;
     text-align: center;
     padding: 1rem 0;
+    position: relative;
 }
