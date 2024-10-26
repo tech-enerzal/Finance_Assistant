@@ -58,6 +58,9 @@ html, body {
 }
 
 .chat-bubble {
+    width: 200px; /* Fixed width for uniform size */
+    height: 150px; /* Fixed height for uniform size */
+    padding: 20px; /* Padding for consistent spacing */
     display: flex;
     flex-direction: column;
     border-radius: 0.75rem;
