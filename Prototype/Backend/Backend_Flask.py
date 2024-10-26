@@ -34,8 +34,9 @@ CORS(app)
 app.config['JWT_SECRET_KEY'] = JWT_SECRET_KEY
 jwt = JWTManager(app)
 client = MongoClient(MONGO_URI)
-db = client["KPR_Business_chatbot"]
-users = db["Employee_Credentials"]
+db = client["MumbaiHacks"]
+users = db["LoginInfo"]
+users1 = db["Form"]
 
 # Initialize logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -120,7 +121,7 @@ def submit_form():
 
     try:
         # Assuming `form_collection` is your MongoDB collection
-        db["Form"].insert_one(form_data)  # Insert form data into MongoDB collection
+        users1.insert_one(form_data)  # Insert form data into MongoDB collection
         return jsonify({"message": "Form data saved successfully!"}), 201
     except Exception as e:
         logging.exception("Error saving form data")
