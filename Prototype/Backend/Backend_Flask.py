@@ -111,6 +111,22 @@ def signup():
         logging.exception("Signup failed.")
         return jsonify({"msg": "Signup failed", "error": str(e)}), 500
 
+@app.route('/submit_form', methods=['POST'])
+@jwt_required()
+def submit_form():
+    """Handle form submission and store data in the MongoDB."""
+    form_data = request.get_json()
+    email = get_jwt_identity()  # Retrieve user identity from JWT token
+
+    try:
+        # Assuming `form_collection` is your MongoDB collection
+        db["Form"].insert_one(form_data)  # Insert form data into MongoDB collection
+        return jsonify({"message": "Form data saved successfully!"}), 201
+    except Exception as e:
+        logging.exception("Error saving form data")
+        return jsonify({"message": "Error saving form data"}), 500
+
+
 @app.route('/api/auth/login', methods=['POST'])
 def login():
     """Login endpoint with JWT, TOTP verification, and first-time login check."""
@@ -169,6 +185,21 @@ def profile():
     email = get_jwt_identity()
     user = users.find_one({"email": email}, {"_id": 0, "password": 0, "two_factor_secret": 0})
     return jsonify(user), 200
+
+@app.route('/auth', methods=['POST'])
+def authenticate():
+    """Authenticate user and return a JWT token."""
+    data = request.get_json()
+    username = data.get('username')
+    password = data.get('password')
+
+    # Example credentials (replace with actual user lookup)
+    if username == "admin" and password == "password":
+        access_token = create_access_token(identity=username)
+        return jsonify(access_token=access_token), 200
+    else:
+        return jsonify({"msg": "Bad username or password"}), 401
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
