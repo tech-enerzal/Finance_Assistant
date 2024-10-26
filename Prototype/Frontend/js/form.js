@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (response.ok) {
                 alert(result.message);  // Show success message
-                window.location.href = '/dashboard.html';  // Redirect to dashboard
+                window.location.href = '/pages/dashboard.html';  // Redirect to dashboard
             } else {
                 alert('Error: ' + result.message);  // Show error message if not successful
             }
