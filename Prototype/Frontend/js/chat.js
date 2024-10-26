@@ -60,42 +60,20 @@ document.addEventListener('DOMContentLoaded', function() {
      * Utilizes Markdown for response formatting.
      * @type {string}
      */
-    const initialSystemMessage = `
-    You are Enerzal, a friendly and intelligent chatbot developed by Tech Enerzal. Your primary role is to assist employees of Tech Enerzal by providing helpful, polite, and accurate information. You should always maintain a friendly and approachable tone while ensuring your responses are clear and informative. Your purpose is to assist with the following:
-
-    1. **HR-Related Queries:** Help employees with questions regarding company policies, leave management, employee benefits, payroll, and other HR-related topics. Be empathetic and supportive, especially for sensitive topics like leave or benefits.
-
-    2. **IT Support:** Provide guidance on common IT issues employees may encounter, such as troubleshooting technical problems, resetting passwords, or navigating company software. Be patient and provide step-by-step instructions for resolving technical issues.
-
-    3. **Company Events & Updates:** Keep employees informed about upcoming company events, milestones, and internal updates. Share details about events in a friendly, enthusiastic tone to keep the company culture vibrant and engaging.
-
-    4. **Document Summarization and Querying:** Enerzal also helps employees by summarizing documents (PDF, DOCX, TXT) and answering queries based on the content of uploaded documents. For document summaries, be concise and informative, extracting the key points while maintaining clarity. When answering queries, provide clear and accurate answers based on the document content, making sure to offer further assistance if needed.
-
-    Guidelines to follow for every response:
-    - Always maintain a positive and friendly tone.
     
-    - Offer help proactively by suggesting next steps or additional resources.
-    - Be concise but detailed enough to ensure the employee gets all the information they need.
-    - When responding to questions or queries, prioritize clarity and accuracy.
-    - If a question falls outside of your scope, politely guide the user to the appropriate department or suggest alternative ways they can find help.
-    - Always be empathetic and understanding, especially when dealing with sensitive HR or IT issues.
-    
-    Remember, your goal is to make every employee interaction positive and helpful, ensuring that they feel supported by Tech Enerzal.
-    `
     // Use Markdown when generating responses
 
-    // Add the system message to the conversation history
-    conversationHistory.push({ role: "system", content: initialSystemMessage });
 
     /**
      * Prunes the conversation history to retain only the system message and the last three user/assistant interactions.
      */
     function pruneConversationHistory() {
-        // Exclude the initial system message when pruning
-        if (conversationHistory.length > 4) { // 1 system message + last 3 entries
-            conversationHistory = [conversationHistory[0], ...conversationHistory.slice(-3)];
+        // Retain only the last 4 messages (adjust the number as needed)
+        if (conversationHistory.length > 4) {
+            conversationHistory = conversationHistory.slice(-4);
         }
     }
+    
 
     /**
      * Sends a message from the user to the assistant and handles the response.
@@ -110,95 +88,83 @@ document.addEventListener('DOMContentLoaded', function() {
             if (logo) {
                 logo.remove();
             }
-
+    
+            console.log("User message:", message);
+    
             // Create user message bubble
             const userBubble = document.createElement('div');
             userBubble.className = 'chat-bubble chat-bubble-user shadow-sm';
             userBubble.innerHTML = `<p>${message}</p>`;
             chatBubbles.appendChild(userBubble);
-
+    
             // Add the user's message to the conversation history
             conversationHistory.push({ role: "user", content: message });
-
+    
             // Prune conversation history to retain only last 3 messages plus system prompt
             pruneConversationHistory();
-
+    
             // Clear input and disable it while waiting for response
             input.value = '';
             input.disabled = true; // Disable input while waiting for response
             chatBubbles.scrollTop = chatBubbles.scrollHeight; // Scroll to bottom
-
+    
             try {
-                // Fetch the response from the Flask backend
+                // Retrieve the JWT token from localStorage and log its presence
+                const token = localStorage.getItem('jwtToken');
+                console.log("Authorization Token from localStorage:", token);
+    
+                // Check if token is missing and log a message if necessary
+                if (!token) {
+                    console.error("Authorization Token is missing. User might need to log in again.");
+                    alert("Authorization Token is missing. Please log in again.");
+                    input.disabled = false; // Re-enable input to allow user action
+                    return;
+                }
+    
+                // Send the conversation history with Authorization header
                 const response = await fetch("http://localhost:5000/api/chat", {
                     method: "POST",
                     headers: {
-                        "Content-Type": "application/json"
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
                     },
                     body: JSON.stringify({
                         messages: conversationHistory // Send conversation history only
                     })
                 });
-
+    
+                console.log("Response status:", response.status);
+                const responseBody = await response.json();
+                console.log("Response body:", responseBody);
+    
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }
-
-                // Create assistant response bubble (empty initially)
+    
+                // Create and display assistant response bubble
                 const assistantBubble = document.createElement('div');
                 assistantBubble.className = 'chat-bubble chat-bubble-assistant shadow-sm';
+                assistantBubble.innerHTML = `<p>${responseBody.content}</p>`;
                 chatBubbles.appendChild(assistantBubble);
-
-                // Read and process the streamed response
-                const reader = response.body.getReader();
-                let decoder = new TextDecoder();
-                let assistantMessage = '';
-
-                while (true) {
-                    const { done, value } = await reader.read();
-                    if (done) break; // Stream finished
-
-                    // Decode the chunk
-                    const chunk = decoder.decode(value);
-                    const lines = chunk.split('\n'); // Split on newline characters
-
-                    lines.forEach(line => {
-                        if (line) {
-                            // Append the line to the assistant message
-                            assistantMessage += line;
-
-                            // Use marked.js to convert Markdown to HTML
-                            const assistantMessageHTML = marked.parse(assistantMessage);
-
-                            // Update the assistant bubble with the parsed content
-                            assistantBubble.innerHTML = `<p>${assistantMessageHTML}</p>`;
-                        }
-                    });
-
-                    chatBubbles.scrollTop = chatBubbles.scrollHeight; // Scroll to bottom as content comes in
-                }
-
-                // Final conversion of the full assistant message once streaming is done
-                const finalAssistantMessageHTML = marked.parse(assistantMessage);
-                assistantBubble.innerHTML = `<p>${finalAssistantMessageHTML}</p>`;
-
+    
                 // Add the assistant's message to the conversation history
-                conversationHistory.push({ role: "assistant", content: assistantMessage });
-
+                conversationHistory.push({ role: "assistant", content: responseBody.content });
+    
             } catch (error) {
-                console.error("Error:", error);
-                // Display error message to user
-                const assistantBubble = document.createElement('div');
-                assistantBubble.className = 'chat-bubble chat-bubble-assistant shadow-sm';
-                assistantBubble.innerHTML = `<p>Sorry, I encountered an error. Please try again later.</p>`;
-                chatBubbles.appendChild(assistantBubble);
+                console.error("Error in sendMessage:", error);
+                const errorBubble = document.createElement('div');
+                errorBubble.className = 'chat-bubble chat-bubble-assistant shadow-sm';
+                errorBubble.innerHTML = `<p>Sorry, I encountered an error. Please try again later.</p>`;
+                chatBubbles.appendChild(errorBubble);
             }
-
+    
             // Re-enable input
             input.disabled = false;
             chatBubbles.scrollTop = chatBubbles.scrollHeight; // Scroll to bottom
         }
     }
+    
+    
 
     /**
      * Handles file uploads to allow users to send documents to the assistant.
