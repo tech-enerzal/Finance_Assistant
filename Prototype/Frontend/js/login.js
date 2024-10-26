@@ -1,7 +1,7 @@
 /**
  * @fileoverview Manages user authentication interactions, including login and signup processes.
  * Handles UI transitions between login and registration forms, submits authentication requests
- * to the backend API, and manages responses such as token storage and QR code display for TOTP.
+ * to the backend API, and manages responses such as jwtToken storage and QR code display for TOTP.
  * @version 1.1
  */
 
@@ -29,6 +29,7 @@ const loginLink = document.querySelector('.login-link');
  */
 registerLink.onclick = () => {
     wrapper.classList.add('active');
+    console.log("Switched to the registration form.");
 };
 
 /**
@@ -37,6 +38,7 @@ registerLink.onclick = () => {
  */
 loginLink.onclick = () => {
     wrapper.classList.remove('active');
+    console.log("Switched to the login form.");
 };
 
 /**
@@ -48,7 +50,7 @@ const loginForm = document.getElementById('login-form');
 /**
  * Event handler for the login form submission.
  * Prevents the default form submission, collects user input, sends a POST request to the login API,
- * handles the response by storing the token and redirecting on success, or alerting the user on failure.
+ * handles the response by storing the jwtToken and redirecting on success, or alerting the user on failure.
  * @param {Event} e - The form submission event.
  */
 loginForm.onsubmit = async (e) => {
@@ -60,7 +62,8 @@ loginForm.onsubmit = async (e) => {
     const totp = document.getElementById('totp').value;
 
     // Construct the data object to be sent in the POST request
-    const data = { email, password, token: totp };
+    const data = { email, password, token: totp };  // Ensure TOTP is passed as `token`
+    console.log("Login form submitted with data:", data);
 
     try {
         // Send a POST request to the login API endpoint with the user credentials
@@ -74,27 +77,34 @@ loginForm.onsubmit = async (e) => {
 
         // Parse the JSON response from the server
         const result = await response.json();
+        console.log("Received response from login API:", result);
 
         if (response.ok) {
-            // If login is successful, store the received token in localStorage
-            localStorage.setItem('token', result.token);
+            // Store the token as "jwtToken" for consistency across pages
+            localStorage.setItem('jwtToken', result.token);
+            console.log("JWT token stored in localStorage:", result.token);
+
+            // Log whether it's the user's first time
+            console.log("User first-time login status:", result.first_time);
 
             // Redirect user based on first_time flag
             if (result.first_time) {
+                console.log("Redirecting to first-time form...");
                 window.location.href = '/pages/form.html'; // Redirect to form for first-time login
             } else {
+                console.log("Redirecting to dashboard...");
                 window.location.href = '/pages/dashboard.html'; // Redirect to dashboard for returning users
             }
         } else {
-            // If the response is not successful, alert the user with the received message or a default message
             alert(result.msg || 'Login failed.');
+            console.log("Login failed with message:", result.msg || 'No message provided.');
         }
     } catch (error) {
-        // Log any errors to the console and alert the user of the failure
-        console.error('Error:', error);
+        console.error("Error during login request:", error);
         alert('Login failed.');
     }
 };
+
 
 /**
  * Selects the signup form element by its ID.
@@ -118,11 +128,13 @@ signupForm.onsubmit = async (e) => {
     // Ensure both email and password fields have values
     if (!email || !password) {
         alert('Please provide both email and password.');
+        console.log("Signup failed: Email or password missing.");
         return;
     }
 
     // Construct the data object to be sent in the POST request
     const data = { email, password };
+    console.log("Signup form submitted with data:", data);
 
     try {
         // Send a POST request to the signup API endpoint with the user credentials
@@ -136,10 +148,13 @@ signupForm.onsubmit = async (e) => {
 
         // Parse the JSON response from the server
         const result = await response.json();
+        console.log("Received response from signup API:", result);
 
         if (response.ok) {
             // If the response is successful, alert the user with the success message
             alert(result.msg);
+            console.log("User registered successfully. Displaying TOTP QR code.");
+
             // Open a new window to display the QR code for TOTP setup
             const newWindow = window.open("", "_blank", "width=400,height=400");
             newWindow.document.write(`<html><head><title>Scan QR Code for TOTP</title></head>`);
@@ -149,10 +164,11 @@ signupForm.onsubmit = async (e) => {
         } else {
             // If the response is not successful, alert the user with the received message or a default message
             alert(result.msg || 'Signup failed.');
+            console.log("Signup failed with message:", result.msg || 'No message provided.');
         }
     } catch (error) {
         // Log any errors to the console and alert the user of the failure
-        console.error('Error:', error);
+        console.error("Error during signup request:", error);
         alert('An error occurred during signup.');
     }
 };
