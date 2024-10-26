@@ -84,48 +84,46 @@ def generate_stream(payload):
     # Build chat history excluding the last message
     chat_history = messages[:-1]
 
-
-
-    ''' Function/Tool calls working in Refractor
-    # Define the available functions
-            available_functions = [
-                {
-                    "name": "get_employee_data",
-                    "description": "Fetch specific personal data fields of an employee from the database.",
-                    "parameters": {
-                        "type": "object",
-                        "properties": {
-                            "fields": {
-                                "type": "array",
-                                "items": {
-                                    "type": "string",
-                                    "enum": ALLOWED_FIELDS
-                                },
-                                "description": "List of employee data fields to retrieve. Allowed fields are: employee_id, name, department, job_title, salary, leaves_taken_this_month."
-                            }
-                        },
-                        "required": ["fields"]
-                    }
-                },
-                {
-                    "name": "get_hr_policy",
-                    "description": "Fetch HR policy information by querying the vector database.",
-                    "parameters": {
-                        "type": "object",
-                        "properties": {
-                            "user_query": {
-                                "type": "string",
-                                "description": "The query related to HR policy that is to be similarity searched in HR dataset."
-                            }
-                        },
-                        "required": ["user_query"]
-                    }
-                }
-            ]
-
-    '''
-
     try:
+
+        ''' Function/Tool calls working in Refractor
+        # Define the available functions
+                available_functions = [
+                    {
+                        "name": "get_employee_data",
+                        "description": "Fetch specific personal data fields of an employee from the database.",
+                        "parameters": {
+                            "type": "object",
+                            "properties": {
+                                "fields": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string",
+                                        "enum": ALLOWED_FIELDS
+                                    },
+                                    "description": "List of employee data fields to retrieve. Allowed fields are: employee_id, name, department, job_title, salary, leaves_taken_this_month."
+                                }
+                            },
+                            "required": ["fields"]
+                        }
+                    },
+                    {
+                        "name": "get_hr_policy",
+                        "description": "Fetch HR policy information by querying the vector database.",
+                        "parameters": {
+                            "type": "object",
+                            "properties": {
+                                "user_query": {
+                                    "type": "string",
+                                    "description": "The query related to HR policy that is to be similarity searched in HR dataset."
+                                }
+                            },
+                            "required": ["user_query"]
+                        }
+                    }
+                ]
+
+        '''
 
         # Step 1: Get user query (user_message already obtained)
         logging.info("Step 1: User query obtained.")

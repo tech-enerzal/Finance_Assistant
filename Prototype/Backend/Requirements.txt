@@ -15,3 +15,5 @@ flashrank  # Adjust if it's a private or custom package
 sentence-transformers
 faiss-cpu  # Use faiss-gpu if you need GPU support
 dns
+python-dotenv
+
