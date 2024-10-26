@@ -284,17 +284,38 @@ def chat():
         )
         chat = model.start_chat(
             history=history,
-            enable_automatic_function_calling=True
+            enable_automatic_function_calling=False
         )
 
         logging.info("Chat session started with function calling enabled")
 
-        # Generate response
-        user_message = messages[-1]["content"] if messages else ""
-        logging.info(f"User message: {user_message}")
-        response = chat.send_message(user_message)  # Removed context parameter
 
-        response_content = response.text if response else "I'm here to help!"
+        # Generate response
+        # Send the user's message
+        user_message = messages[-1]["content"] if messages else ""
+        assistant_response = chat.send_message(user_message)
+
+        # Check if the assistant is requesting a function call
+        if assistant_response.candidates[0].dict().get('function_call'):
+            function_call = assistant_response.candidates[0].function_call
+            function_name = function_call['name']
+            logging.info(f"Assistant requested function call: {function_name}")
+
+            # Execute the function
+            try:
+                function_result = locals()[function_name]()
+                logging.info(f"Function {function_name} executed successfully with result: {function_result}")
+            except Exception as e:
+                logging.exception(f"Error executing function {function_name}")
+                function_result = 'Error executing function'
+
+            # Send the function result back to the assistant
+            assistant_response = chat.send_message(
+                message={'role': 'function', 'name': function_name, 'content': str(function_result)}
+            )
+
+        response_content = assistant_response.text if assistant_response else "I'm here to help!"
+
         logging.info(f"Assistant response: {response_content}")
 
         return jsonify({'content': response_content})

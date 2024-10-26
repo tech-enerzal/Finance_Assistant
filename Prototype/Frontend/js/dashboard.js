@@ -67,6 +67,7 @@ function createOrUpdateChart() {
 
 function startChat() {
   alert("Starting chat with your personalized chatbot!");
+  window.location.href = '/pages/chat'; // Redirect to /pages/chat
 }
 
 function openCalculator() {
