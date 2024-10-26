@@ -115,11 +115,15 @@ def chat():
         history = []
         for msg in messages:
             if msg["role"] == "user":
-                history.append({"role": "user", "parts": msg["content"]})
+                history.append({"role": "user", "content": msg["content"]})
             elif msg["role"] == "assistant":
-                history.append({"role": "model", "parts": msg["content"]})
+                history.append({"role": "assistant", "content": msg["content"]})
 
         logging.debug(f"Conversation history: {history}")
+    
+        # Get the last message
+        last_msg = messages[-1] if messages else None
+
 
         # Define functions that have access to email via closure
         def get_user_name() -> str:
@@ -143,8 +147,11 @@ def chat():
 
         def get_user_income() -> float:
             """Retrieve the user's monthly income."""
+            logging.info(f"Function get_user_income called for email: {email}")
             user = form_collection.find_one({"email": email})
-            return user.get('income', 'Information not available')
+            income = user.get('income', 'Information not available')
+            logging.info(f"get_user_income retrieved income: {income}")
+            return income
 
         def get_user_fixed_expenses() -> float:
             """Retrieve the user's fixed monthly expenses."""
@@ -278,47 +285,27 @@ def chat():
 
         # Initialize the model with function calling
         model = genai.GenerativeModel(
-            model_name="models/gemini-1.5-flash",  # Use the appropriate model name
+            model_name="models/gemini-1.5-flash",  # Ensure you have access to this model
             tools=available_functions,
             system_instruction=full_system_instruction
         )
-        chat = model.start_chat(
-            history=history,
-            enable_automatic_function_calling=False
-        )
+        chat = model.start_chat(enable_automatic_function_calling=True)
 
-        logging.info("Chat session started with function calling enabled")
+        logging.info("Chat session started with automatic function calling enabled")
 
+        # Send the last user's message to generate the assistant's reply
+        if last_msg and last_msg["role"] == "user":
+            user_message = last_msg["content"]
+            logging.info(f"User message: {user_message}")
+            assistant_response = chat.send_message(user_message)
+            response_content = assistant_response.text if assistant_response else "I'm here to help!"
+            logging.info(f"Assistant response: {response_content}")
 
-        # Generate response
-        # Send the user's message
-        user_message = messages[-1]["content"] if messages else ""
-        assistant_response = chat.send_message(user_message)
+            return jsonify({'content': response_content})
 
-        # Check if the assistant is requesting a function call
-        if assistant_response.candidates[0].dict().get('function_call'):
-            function_call = assistant_response.candidates[0].function_call
-            function_name = function_call['name']
-            logging.info(f"Assistant requested function call: {function_name}")
-
-            # Execute the function
-            try:
-                function_result = locals()[function_name]()
-                logging.info(f"Function {function_name} executed successfully with result: {function_result}")
-            except Exception as e:
-                logging.exception(f"Error executing function {function_name}")
-                function_result = 'Error executing function'
-
-            # Send the function result back to the assistant
-            assistant_response = chat.send_message(
-                message={'role': 'function', 'name': function_name, 'content': str(function_result)}
-            )
-
-        response_content = assistant_response.text if assistant_response else "I'm here to help!"
-
-        logging.info(f"Assistant response: {response_content}")
-
-        return jsonify({'content': response_content})
+        else:
+            # Handle cases where there's no user message to process
+            return jsonify({'content': "No user message to process."}), 400
 
     except Exception as e:
         logging.exception("Failed to fetch the assistant response.")
