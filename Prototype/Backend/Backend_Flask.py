@@ -34,8 +34,9 @@ CORS(app)
 app.config['JWT_SECRET_KEY'] = JWT_SECRET_KEY
 jwt = JWTManager(app)
 client = MongoClient(MONGO_URI)
-db = client["KPR_Business_chatbot"]
-users = db["Employee_Credentials"]
+db = client["MumbaiHacks"]
+users = db["LoginInfo"]
+users1 = db["Form"]
 
 # Initialize logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -120,7 +121,7 @@ def submit_form():
 
     try:
         # Assuming `form_collection` is your MongoDB collection
-        db["Form"].insert_one(form_data)  # Insert form data into MongoDB collection
+        users1.insert_one(form_data)  # Insert form data into MongoDB collection
         return jsonify({"message": "Form data saved successfully!"}), 201
     except Exception as e:
         logging.exception("Error saving form data")
@@ -149,21 +150,30 @@ def login():
             return jsonify({'msg': 'Invalid 2FA token'}), 400
 
         # Check if the user is logging in for the first time
-        if user.get('is_first_time', False):
+        if user.get('is_first_time', True):
+            # Update the user's first-time flag in the database
+            users.update_one({"email": email}, {"$set": {"is_first_time": False}})
+            
             # Generate JWT token for the first-time login
             access_token = create_access_token(identity=email)
             return jsonify({
                 'token': access_token,
+                'redirect': '/form',  # Redirect to form completion page
                 'first_time': True  # Indicate that the user should complete the form
             }), 200
 
-        # Generate JWT token for a regular login
+        # Generate JWT token for a regular login and redirect to dashboard
         access_token = create_access_token(identity=email)
-        return jsonify({'token': access_token, 'first_time': False}), 200
+        return jsonify({
+            'token': access_token,
+            'redirect': '/dashboard',  # Redirect to dashboard for regular users
+            'first_time': False
+        }), 200
 
     except Exception as e:
         logging.exception("Login failed.")
         return jsonify({'msg': "Login failed", "error": str(e)}), 500
+
 
 @app.route('/api/auth/complete_profile', methods=['POST'])
 @jwt_required()
