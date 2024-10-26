@@ -178,7 +178,7 @@ def decide_model(conversation_history):
     #     return "llama3.1:8b"  # Large model for long conversations
     # else:
     #     return "gemma2:2b"  # Small model for short conversations
-    return "llama3.1:8b"  # Currently always returns the large model for heavy lifting
+    return "gemma2:2b"  # Currently always returns the large model for heavy lifting
 
 @app.route('/api/chat', methods=['POST'])
 def chat():
