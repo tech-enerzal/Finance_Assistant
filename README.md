@@ -26,7 +26,7 @@ On the technical front, **Tech Enerzal** integrates **NLP (Natural Language Proc
 
 ## Additional Resources
 
-- **Mumbai Hacks** [PPT](Assets/MumbaiHacks Deck Format.pdf)
+- **Mumbai Hacks** [PPT](Assets/MumbaiHacks_Deck_Format.pdf)
 
 - **UIX**: [View UIX](https://www.figma.com/design/qPoS2NqzcxGgfnBXayYW9k/SIH-Chat-Bot?node-id=143-8&t=ZLJ8TN1boIUwvxPx-1)
 
