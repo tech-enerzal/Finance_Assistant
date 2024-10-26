@@ -8,7 +8,7 @@
 
 body {
   font-family: 'Roboto', sans-serif;
-  background-color: #e0f2f1;
+  background-color: #ffccdd;
   color: #333;
   display: flex;
   min-height: 100vh;
@@ -17,7 +17,7 @@ body {
 /* Sidebar */
 .sidebar {
   width: 250px;
-  background-color: #dcdddd;
+  background-color: #f5f1f1;
   padding: 20px;
   display: flex;
   flex-direction: column;
@@ -27,13 +27,13 @@ body {
 
 .sidebar h1 {
   font-size: 1.8em;
-  color: #00796b;
+  color: #dc3545;
   margin-bottom: 20px;
 }
 
 .sidebar nav a {
   display: block;
-  color: #00796b;
+  color: #0b0a0a;
   padding: 10px;
   width: 100%;
   text-align: center;
@@ -43,8 +43,8 @@ body {
 }
 
 .sidebar nav a:hover {
-  background-color: #b2dfdb;
-  color: #004d40;
+  background-color: #ffccdd;
+  color: #101010;
 }
 
 /* Main Content */
@@ -55,7 +55,7 @@ body {
 
 .header {
   font-size: 2.5em;
-  color: #00796b;
+  color: #dc3545;
   text-align: center;
   margin-bottom: 20px;
 }
@@ -105,7 +105,7 @@ body {
 }
 
 .box h2 {
-  color: #00796b;
+  color: #181818;
   margin-bottom: 10px;
   font-size: 1.2em;
 }
@@ -113,7 +113,7 @@ body {
 .value {
   font-size: 24px;
   font-weight: bold;
-  color: #00796b;
+  color: #eb6893;
   margin-top: 10px;
 }
 
@@ -126,7 +126,7 @@ body {
 .input-group label {
   display: block;
   font-size: 0.9em;
-  color: #555;
+  color: #68060f;
   margin-bottom: 5px;
 }
 
@@ -134,8 +134,8 @@ body {
 .input-group select {
   width: 100%;
   padding: 10px;
-  border: 1px solid #00796b;
-  background-color: #e0f2f1;
+  border: 1px solid #f7ecf0;
+  background-color: #f7f7f7;
   color: #333;
   border-radius: 5px;
   outline: none;
@@ -144,13 +144,13 @@ body {
 
 .input-group input:hover,
 .input-group select:hover {
-  background-color: #e0f2f1;
+  background-color: #ffccdd;
 }
 
 .button {
   display: inline-block;
-  background-color: #00796b;
-  color: #ffffff;
+  background-color: #dc3545;
+  color: #f4b5b5;
   padding: 10px 15px;
   font-size: 0.9em;
   border: none;
@@ -161,7 +161,7 @@ body {
 }
 
 .button:hover {
-  background-color: #004d40;
+  background-color: #691a34;;
 }
 
 /* Transactions */
