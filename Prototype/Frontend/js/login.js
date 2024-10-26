@@ -2,7 +2,7 @@
  * @fileoverview Manages user authentication interactions, including login and signup processes.
  * Handles UI transitions between login and registration forms, submits authentication requests
  * to the backend API, and manages responses such as token storage and QR code display for TOTP.
- * @version 1.0
+ * @version 1.1
  */
 
 /**
@@ -76,10 +76,15 @@ loginForm.onsubmit = async (e) => {
         const result = await response.json();
 
         if (response.ok) {
-            // If the response is successful, store the received token in localStorage
+            // If login is successful, store the received token in localStorage
             localStorage.setItem('token', result.token);
-            // Redirect the user to the chat page after successful login
-            window.location.href = '/pages/chat.html';
+
+            // Redirect user based on first_time flag
+            if (result.first_time) {
+                window.location.href = '/pages/form.html'; // Redirect to form for first-time login
+            } else {
+                window.location.href = '/pages/dashboard.html'; // Redirect to dashboard for returning users
+            }
         } else {
             // If the response is not successful, alert the user with the received message or a default message
             alert(result.msg || 'Login failed.');
@@ -130,7 +135,7 @@ signupForm.onsubmit = async (e) => {
         });
 
         // Parse the JSON response from the server
-        const result = await response.json();  // Parse the JSON response
+        const result = await response.json();
 
         if (response.ok) {
             // If the response is successful, alert the user with the success message

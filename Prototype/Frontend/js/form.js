@@ -28,7 +28,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify(data)
             });
             const result = await response.json();
-            alert(result.message);
+
+            if (response.ok) {
+                alert(result.message);  // Show success message
+                window.location.href = '/dashboard.html';  // Redirect to dashboard
+            } else {
+                alert('Error: ' + result.message);  // Show error message if not successful
+            }
         } catch (error) {
             console.error('Error:', error);
             alert('Error submitting form data');

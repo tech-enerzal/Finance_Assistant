@@ -16,4 +16,6 @@ sentence-transformers
 faiss-cpu  # Use faiss-gpu if you need GPU support
 dns
 python-dotenv
+google-generativeai
+
 

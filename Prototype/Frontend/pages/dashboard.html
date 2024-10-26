@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal Finance Dashboard</title>
+    <link rel="stylesheet" href="dashboard.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="sidebar">
+        <h1>ENERZAL</h1>
+        <nav>
+            <a href="#income">Income</a>
+            <a href="#expenses">Expenses</a>
+            <a href="#networth">Net Worth</a>
+            <a href="#transactions">Transactions</a>
+        </nav>
+    </div>
+
+    <div class="main-content">
+        <h2 class="header">Personal Finance Dashboard</h2>
+        <div class="container">
+            <!-- Income, Expenses, Net Worth, and Add Spend Boxes -->
+            <div class="box" id="income">
+                <h2>Income</h2>
+                <div class="input-group">
+                    <label for="incomeInput">Enter Income (₹):</label>
+                    <input type="number" id="incomeInput" value="0" oninput="updateValues()">
+                </div>
+                <p class="value" id="incomeDisplay">₹0</p>
+            </div>
+
+            <div class="box" id="expenses">
+                <h2>Expenses</h2>
+                <p class="value" id="expensesDisplay">₹0</p>
+            </div>
+
+            <div class="box" id="networth">
+                <h2>Net Worth</h2>
+                <p class="value" id="netWorthDisplay">₹0</p>
+            </div>
+
+            <div class="box">
+                <h2>Add Spend</h2>
+                <div class="input-group">
+                    <label for="spendName">Spend Name:</label>
+                    <input type="text" id="spendName" placeholder="Enter spend name">
+                </div>
+                <div class="input-group">
+                    <label for="spendAmount">Spend Amount (₹):</label>
+                    <input type="number" id="spendAmount" placeholder="Enter spend amount">
+                </div>
+                <div class="input-group">
+                    <label for="spendCategory">Category:</label>
+                    <select id="spendCategory">
+                        <option value="Food">Food</option>
+                        <option value="Travel">Travel</option>
+                        <option value="Bills">Bills</option>
+                        <option value="Investment">Investment</option>
+                        <option value="Others">Others</option>
+                    </select>
+                </div>
+                <button class="button" onclick="addSpend()">Add Spend</button>
+            </div>
+
+            <!-- Recent Transactions and Financial Overview Boxes -->
+            <div class="box" id="transactions">
+                <h2>Recent Transactions</h2>
+                <ul class="transactions" id="transactionsList"></ul>
+            </div>
+
+            <div class="box">
+                <h2>Financial Overview</h2>
+                <canvas id="myChart" width="400" height="400"></canvas>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div style="text-align: center; margin-top: 20px;">
+            <button class="button" onclick="startChat()">Save Money</button>
+            <button class="button" onclick="openCalculator()">Calculator</button>
+            <button class="button" onclick="goToChat()">Go to Chat</button>
+        </div>
+    </div>
+
+    <!-- Calculator Modal -->
+    <div id="calculatorModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeCalculator()">&times;</span>
+            <h2>Calculator</h2>
+            <h3>SIP Calculator</h3>
+            <!-- SIP Input Fields and Results -->
+            <div class="input-group">
+                <label for="sipAmount">Monthly Investment (₹):</label>
+                <input type="number" id="sipAmount" placeholder="Enter SIP amount">
+            </div>
+            <div class="input-group">
+                <label for="sipRate">Expected Annual Return (%):</label>
+                <input type="number" id="sipRate" placeholder="Enter expected return rate">
+            </div>
+            <div class="input-group">
+                <label for="sipYears">Investment Duration (Years):</label>
+                <input type="number" id="sipYears" placeholder="Enter duration in years">
+            </div>
+            <button class="button" onclick="calculateSIP()">Calculate SIP</button>
+            <p id="sipResult" style="margin-top: 15px;"></p>
+
+            <h3>Loan Calculator</h3>
+            <!-- Loan Input Fields and Results -->
+            <div class="input-group">
+                <label for="loanAmount">Loan Amount (₹):</label>
+                <input type="number" id="loanAmount" placeholder="Enter loan amount">
+            </div>
+            <div class="input-group">
+                <label for="loanRate">Annual Interest Rate (%):</label>
+                <input type="number" id="loanRate" placeholder="Enter interest rate">
+            </div>
+            <div class="input-group">
+                <label for="loanYears">Loan Tenure (Years):</label>
+                <input type="number" id="loanYears" placeholder="Enter tenure in years">
+            </div>
+            <button class="button" onclick="calculateLoan()">Calculate Loan</button>
+            <p id="loanResult" style="margin-top: 15px;"></p>
+        </div>
+    </div>
+
+    <script src="dashboard.js"></script>
+</body>
+</html>
